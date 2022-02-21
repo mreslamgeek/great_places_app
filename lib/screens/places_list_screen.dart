@@ -18,26 +18,36 @@ class PlacesListScreen extends StatelessWidget {
           )
         ],
       ),
-      body: Consumer<GreatePlaces>(
-        builder: (ctx, greatPlaces, ch) {
-          return greatPlaces.items.isEmpty
-              ? ch
-              : ListView.builder(
-                  itemCount: greatPlaces.items.length,
-                  itemBuilder: (_, i) => ListTile(
-                    leading: CircleAvatar(
-                      backgroundImage: FileImage(greatPlaces.items[i].image),
-                    ),
-                    title: Text(greatPlaces.items[i].title),
-                    onTap: () {
-                      //// go to datil page
-                    },
-                  ),
-                );
-        },
-        child: Center(
-          child: const Text('Got no places yet , start adding some!'),
-        ),
+      body: FutureBuilder(
+        future: Provider.of<GreatePlaces>(context, listen: false)
+            .fetchAndSetPlaces(),
+        builder: (ctx, snapshopt) => snapshopt.connectionState ==
+                ConnectionState.waiting
+            ? Center(
+                child: CircularProgressIndicator(),
+              )
+            : Consumer<GreatePlaces>(
+                builder: (ctx, greatPlaces, ch) {
+                  return greatPlaces.items.isEmpty
+                      ? ch
+                      : ListView.builder(
+                          itemCount: greatPlaces.items.length,
+                          itemBuilder: (_, i) => ListTile(
+                            leading: CircleAvatar(
+                              backgroundImage:
+                                  FileImage(greatPlaces.items[i].image),
+                            ),
+                            title: Text(greatPlaces.items[i].title),
+                            onTap: () {
+                              //// go to datil page
+                            },
+                          ),
+                        );
+                },
+                child: Center(
+                  child: const Text('Got no places yet , start adding some!'),
+                ),
+              ),
       ),
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.add),
